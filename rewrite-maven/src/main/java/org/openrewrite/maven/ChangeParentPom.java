@@ -105,6 +105,14 @@ public class ChangeParentPom extends Recipe {
     @Nullable
     Boolean allowVersionDowngrades;
 
+    @Option(displayName = "Except",
+            description = "Accepts a list of GAVs. Dependencies matching a GAV will be ignored by this recipe." +
+                    " GAV versions are ignored if provided.",
+            example = "com.jcraft:jsch",
+            required = false)
+    @Nullable
+    List<String> except;
+
     @Override
     public String getDisplayName() {
         return "Change Maven parent";
@@ -241,7 +249,7 @@ public class ChangeParentPom extends Recipe {
                                     doAfterVisit(visitor);
                                 }
                                 maybeUpdateModel();
-                                doAfterVisit(new RemoveRedundantDependencyVersions(null, null, GTE, null).getVisitor());
+                                doAfterVisit(new RemoveRedundantDependencyVersions(null, null, GTE, except).getVisitor());
                             }
                         } catch (MavenDownloadingException e) {
                             for (Map.Entry<MavenRepository, String> repositoryResponse : e.getRepositoryResponses().entrySet()) {
